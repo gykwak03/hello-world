@@ -1,0 +1,34 @@
+import tkinter as tk
+import urllib.parse
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+
+def on_hover(event):
+    # 마우스가 올려진 텍스트 출력
+    word = event.widget["text"]
+    print(word)
+    encoded_string = urllib.parse.quote(word)  # 단어를 URL 인코딩
+    html = urlopen("https://stdict.korean.go.kr/search/searchResult.do?pageSize=10&searchKeyword=" + encoded_string)
+    bsObject = BeautifulSoup(html, "html.parser")
+    dt_tags = bsObject.find_all('dt')
+
+    if dt_tags:
+        for dt_tag in dt_tags:
+            definition = dt_tag.get_text(strip=True)
+            print(definition)
+    else:
+        print("정의를 찾을 수 없습니다.")
+
+root = tk.Tk()
+
+text = input("약관을 입력해주세요: ")
+words = text.split()  # 공백을 기준으로 단어 분리
+
+for word in words:
+    label = tk.Label(root, text=word)
+    label.pack()
+    label.bind("<Enter>", on_hover)
+
+root.mainloop()
+
+print('끝')
